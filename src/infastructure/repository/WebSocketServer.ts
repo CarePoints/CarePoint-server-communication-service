@@ -1,61 +1,3 @@
-// import { Server as SocketIOServer } from 'socket.io';
-// import { VideoCallUseCase } from '../../application/useCase/VideoCallUseCase';
-
-
-// export class WebSocketServer {
-//     private io: SocketIOServer;
-//     private videoCallUseCase: VideoCallUseCase;
-
-//     constructor(server: any, videoCallUseCase: VideoCallUseCase) {
-//         this.io = new SocketIOServer(server, {
-//             cors: {
-//                 origin: '*',
-//             }
-//         });
-//         this.videoCallUseCase = videoCallUseCase;
-
-//         this.setupSocketEvents();
-//     }
-
-//     private setupSocketEvents(): void {
-//         this.io.on('connection', (socket) => {
-//             console.log('New client connection', socket.id);
-
-//             socket.on('create-call', (data) => {
-//                 console.log('create-call is workinggggggggggg',data);
-                
-//                 const call = this.videoCallUseCase.createCall(data.roomId, socket.id);
-//                 socket.to(data.roomId).emit('call-created', call);
-//                 console.log('call-created emitted');
-//             });
-
-//             socket.on('offer', (data) => {
-//                 const call = this.videoCallUseCase.getCall(data.callId);
-//                 if (call) {
-//                     this.io.to(call.roomId).emit('offer', { offer: data.offer, from: socket.id });
-//                 }
-//             });
-
-//             socket.on('answer', (data) => {
-//                 const call = this.videoCallUseCase.getCall(data.callId);
-//                 if (call) {
-//                     this.io.to(call.roomId).emit('answer', { answer: data.answer, from: socket.id });
-//                 }
-//             });
-
-//             socket.on('ice-candidate', (data) => {
-//                 const call = this.videoCallUseCase.getCall(data.callId);
-//                 if (call) {
-//                     this.io.to(call.roomId).emit('ice-candidate', { candidate: data.candidate, from: socket.id });
-//                 }
-//             });
-
-//             socket.on('disconnect', () => {
-//                 console.log('Client disconnected');
-//             });
-//         });
-//     }
-// }
 
 
 import { Server as SocketIOServer } from 'socket.io';
@@ -126,9 +68,16 @@ export class WebSocketServer {
             });
 
 
+            socket.on('join-notification', (data) => {
+                console.log('join notification isssssssss',data.roomId)
+                const roomId = data.roomId;
+                socket.join(roomId);
+                console.log(`Socket ${socket.id} joined room: ${roomId}`);
+            });
+
             socket.on('notify-user', (data) => {
                 const { roomId, message } = data;
-        
+              
                 console.log('the roome id is',roomId, 'and message is', message);
                 
                 // Create and save notification
